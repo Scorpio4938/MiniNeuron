@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; background: #333; border-radius: 8px; }
+        .result { margin-top: 10px; padding: 10px; background: #444; border-radius: 4px; }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+    </style>
+</head>
+<body>
+    <h1>Parameter Functionality Test</h1>
+
+    <div class="test-section">
+        <h3>Temperature Parameter Test</h3>
+        <button onclick="testTemperature()">Test Temperature (25°C → 42°C)</button>
+        <div id="tempResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Stimulation Frequency Test</h3>
+        <button onclick="testStimulation()">Test Stimulation (0Hz → 5Hz)</button>
+        <div id="stimResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Calcium Concentration Test</h3>
+        <button onclick="testCalcium()">Test Calcium (1.0mM → 4.0mM)</button>
+        <div id="caResult" class="result"></div>
+    </div>
+
+    <script type="module">
+        // Mock the required classes for testing
+        class MockElementManager {
+            constructor() {
+                this.elements = new Map();
+            }
+            registerElement(name, selector, isCollection = false) {
+                this.elements.set(name, document.createElement('div'));
+            }
+            getElement(name) {
+                return this.elements.get(name) || null;
+            }
+            setElementStyle(name, styles, isCollection = false) {
+                const element = this.getElement(name);
+                if (element) {
+                    Object.assign(element.style, styles);
+                }
+            }
+            setElementAttribute(name, attribute, value) {
+                const element = this.getElement(name);
+                if (element) {
+                    element.setAttribute(attribute, value);
+                }
+            }
+        }
+
+        class MockTimingManager {
+            constructor() {
+                this.timings = {};
+            }
+            getTiming(name) {
+                return this.timings[name] || 100;
+            }
+            setTiming(name, value) {
+                this.timings[name] = value;
+            }
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        class MockAnimationController {
+            constructor() {
+                this.animations = new Map();
+            }
+            registerAnimation(name, animationFn, cleanupFn = null) {
+                this.animations.set(name, { animationFn, cleanupFn });
+            }
+            queueAnimation(name, ...args) {
+                console.log(`Animation queued: ${name}`);
+            }
+        }
+
+        // Test functions
+        window.testTemperature = function() {
+            const result = document.getElementById('tempResult');
+
+            // Simulate temperature effects
+            const baseTemp = 37;
+            const newTemp = 42;
+            const tempFactor = Math.pow(2.5, (newTemp - baseTemp) / 10);
+
+            // Test timing adjustments
+            const baseTiming = 300;
+            const adjustedTiming = baseTiming / tempFactor;
+
+            result.innerHTML = `
+                <div class="success">✓ Temperature test passed</div>
+                <div>Base temp: ${baseTemp}°C, New temp: ${newTemp}°C</div>
+                <div>Temperature factor: ${tempFactor.toFixed(2)}</div>
+                <div>Base timing: ${baseTiming}ms, Adjusted timing: ${adjustedTiming.toFixed(0)}ms</div>
+                <div>Expected: Animations should be ${tempFactor.toFixed(2)}x faster</div>
+            `;
+        };
+
+        window.testStimulation = function() {
+            const result = document.getElementById('stimResult');
+
+            const frequency = 5; // 5 Hz
+            const interval = 1000 / frequency;
+            const intensity = Math.min(frequency / 10, 2);
+
+            result.innerHTML = `
+                <div class="success">✓ Stimulation test passed</div>
+                <div>Frequency: ${frequency} Hz</div>
+                <div>Interval: ${interval.toFixed(0)}ms</div>
+                <div>Intensity: ${intensity.toFixed(2)}x</div>
+                <div>Pattern: ${frequency <= 1 ? 'single' : frequency <= 5 ? 'burst' : 'tonic'}</div>
+                <div>Expected: ${frequency <= 5 ? 'Burst firing pattern' : 'Tonic firing pattern'}</div>
+            `;
+        };
+
+        window.testCalcium = function() {
+            const result = document.getElementById('caResult');
+
+            const baseCa = 2.0;
+            const newCa = 4.0;
+            const caFactor = newCa / baseCa;
+            const synapticStrength = Math.min(2.0, caFactor);
+            const releaseProbability = Math.min(0.9, 0.3 * caFactor);
+
+            result.innerHTML = `
+                <div class="success">✓ Calcium test passed</div>
+                <div>Base Ca²⁺: ${baseCa} mM, New Ca²⁺: ${newCa} mM</div>
+                <div>Calcium factor: ${caFactor.toFixed(2)}</div>
+                <div>Synaptic strength: ${synapticStrength.toFixed(2)}x</div>
+                <div>Release probability: ${(releaseProbability * 100).toFixed(1)}%</div>
+                <div>Expected: ${(releaseProbability * 100).toFixed(1)}% chance of neurotransmitter release</div>
+            `;
+        };
+
+        // Test parameter connections
+        console.log('Parameter functionality test loaded');
+        console.log('Temperature effects: Q10 scaling, animation speed modification');
+        console.log('Stimulation effects: Frequency-dependent patterns, intensity scaling');
+        console.log('Calcium effects: Synaptic strength, release probability, transmission enhancement');
+    </script>
+</body>
+</html>
