@@ -348,6 +348,10 @@ h1 {
     box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
     text-transform: uppercase;
     letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0); /* Force hardware acceleration */
+    will-change: transform; /* Optimize for animations */
 }
 
 .stimulation-control button:hover {
@@ -361,7 +365,43 @@ h1 {
 
 .stimulation-control button.stimulating {
     background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    animation: pulse 0.5s ease-in-out;
+    animation: buttonPulse 0.6s ease-out;
+    transform: scale(0.95);
+}
+
+/* Remove the problematic moving gradient animation */
+.stimulation-control button::before {
+    display: none;
+}
+
+.stimulation-control button:hover::before {
+    display: none;
+}
+
+/* Add subtle glow effect instead */
+.stimulation-control button {
+    position: relative;
+}
+
+.stimulation-control button:hover {
+    box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4), 0 0 20px rgba(0, 184, 148, 0.2);
+}
+
+.stimulation-control button.stimulating {
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4), 0 0 20px rgba(255, 107, 107, 0.3);
+}
+
+.stimulation-control button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes buttonPulse {
+    0% { transform: scale(1); box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3); }
+    50% { transform: scale(0.95); box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5); }
+    100% { transform: scale(1); box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3); }
 }
 
 @keyframes pulse {
@@ -471,7 +511,7 @@ h1 {
 }
 
 .action-potential-active {
-    animation: actionPotential 2s ease-out;
+    animation: actionPotential 3s ease-out;
 }
 
 /* Synaptic transmission animation */
@@ -491,7 +531,7 @@ h1 {
 }
 
 .synaptic-release {
-    animation: synapticRelease 0.3s ease-out;
+    animation: synapticRelease 0.6s ease-out;
 }
 
 /* Calcium influx animation */
@@ -511,7 +551,7 @@ h1 {
 }
 
 .calcium-influx-active {
-    animation: calciumInflux 0.2s ease-out;
+    animation: calciumInflux 0.4s ease-out;
 }
 
 /* Membrane potential color transitions */
@@ -528,6 +568,93 @@ h1 {
 .membrane-resting {
     fill: url(#restingGradient);
     filter: url(#glow);
+}
+
+/* Realistic neuron activation animations */
+@keyframes membraneDepolarization {
+    0% { fill: url(#restingGradient); filter: url(#glow); }
+    50% { fill: url(#depolarizedGradient); filter: url(#actionPotentialGlow); }
+    100% { fill: url(#restingGradient); filter: url(#glow); }
+}
+
+@keyframes ionChannelOpening {
+    0% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.6; }
+}
+
+@keyframes synapticVesicleRelease {
+    0% { transform: scale(1); opacity: 0; }
+    20% { transform: scale(1.8); opacity: 1; }
+    60% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(0.5); opacity: 0; }
+}
+
+@keyframes calciumInflux {
+    0% { transform: scale(1); stroke-width: 2; opacity: 0; }
+    30% { transform: scale(2.5); stroke-width: 4; opacity: 1; }
+    70% { transform: scale(2); stroke-width: 3; opacity: 0.8; }
+    100% { transform: scale(1); stroke-width: 2; opacity: 0; }
+}
+
+@keyframes actionPotentialWave {
+    0% { stroke-dashoffset: 400; opacity: 0; }
+    10% { stroke-dashoffset: 360; opacity: 1; }
+    90% { stroke-dashoffset: 40; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes nodeActivation {
+    0% { transform: scale(1); fill: url(#restingGradient); }
+    50% { transform: scale(1.8); fill: url(#depolarizedGradient); }
+    100% { transform: scale(1); fill: url(#restingGradient); }
+}
+
+/* Enhanced neuron element styling */
+.soma, .axon-hillock, .node-ranvier {
+    transition: all 0.1s ease-out;
+}
+
+.dendritic-tree path {
+    transition: stroke 0.1s ease-out, stroke-width 0.1s ease-out;
+}
+
+.ion-channels circle {
+    transition: all 0.05s ease-out;
+}
+
+.synaptic-vesicles circle {
+    transition: all 0.05s ease-out;
+}
+
+.calcium-influx {
+    transition: all 0.05s ease-out;
+}
+
+/* Realistic activation classes */
+.membrane-activating {
+    animation: membraneDepolarization 0.8s ease-out;
+}
+
+.channel-opening {
+    animation: ionChannelOpening 0.1s ease-out;
+}
+
+.vesicle-releasing {
+    animation: synapticVesicleRelease 0.15s ease-out;
+}
+
+.calcium-influx-active {
+    animation: calciumInflux 0.2s ease-out;
+}
+
+.node-activating {
+    animation: nodeActivation 0.1s ease-out;
+}
+
+/* Smooth transitions for all neuron elements */
+.neuron-svg * {
+    transition: opacity 0.1s ease-out, transform 0.1s ease-out;
 }
 
 /* Glass morphism effect */
@@ -555,6 +682,38 @@ h1 {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Parameter change feedback animations */
+@keyframes parameterFlash {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.8; transform: scale(1); }
+}
+
+.parameter-flash {
+    animation: parameterFlash 0.5s ease-out;
+}
+
+@keyframes dendriticPulse {
+    0% { opacity: 0; stroke-width: 2; }
+    50% { opacity: 0.8; stroke-width: 4; }
+    100% { opacity: 0; stroke-width: 2; }
+}
+
+.dendritic-pulse {
+    animation: dendriticPulse 0.6s ease-out;
+}
+
+@keyframes calciumSpark {
+    0% { opacity: 0; transform: scale(1); }
+    30% { opacity: 1; transform: scale(1.4); }
+    70% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(1); }
+}
+
+.calcium-spark {
+    animation: calciumSpark 0.4s ease-out;
 }
 
 .container > * {
