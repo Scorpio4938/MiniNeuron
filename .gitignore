@@ -2,7 +2,7 @@
 
 .env
 
-.vscode
-.idea
+.vscode/
+.idea/
 
-.claude
+.claude/

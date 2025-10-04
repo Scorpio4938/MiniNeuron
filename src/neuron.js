@@ -34,6 +34,10 @@ class AnimationController {
             // Execute cleanup on error
             if (cleanupFn) cleanupFn();
         } finally {
+            // Clean up current animation after completion
+            if (cleanupFn) {
+                cleanupFn();
+            }
             this.currentAnimationId = null;
         }
     }
@@ -66,6 +70,7 @@ class AnimationController {
             this.currentAnimationId = null;
         }
     }
+
 }
 
 class ElementManager {
@@ -414,6 +419,9 @@ class RealisticNeuron {
     async executeStimulationEffect() {
         this.animationState.currentPhase = 'stimulation';
 
+        // Pause ion channel CSS animations during stimulation
+        this.pauseIonChannelCSSAnimations();
+
         // Soma depolarization
         this.elementManager.setElementAttribute('soma', 'fill', 'url(#depolarizedGradient)');
         this.elementManager.setElementStyle('soma', { filter: 'url(#actionPotentialGlow)' });
@@ -430,7 +438,7 @@ class RealisticNeuron {
 
                         return this.timingManager.delay(this.timingManager.getTiming('dendriticActivation'))
                             .then(() => {
-                                dendrite.style.stroke = '';
+                                dendrite.style.stroke = 'url(#restingGradient)';
                                 dendrite.style.strokeWidth = '';
                                 dendrite.style.filter = '';
                             });
@@ -444,6 +452,9 @@ class RealisticNeuron {
         await this.timingManager.delay(this.timingManager.getTiming('somaDepolarization'));
         this.elementManager.setElementAttribute('soma', 'fill', 'url(#restingGradient)');
         this.elementManager.setElementStyle('soma', { filter: 'url(#glow)' });
+
+        // Resume ion channel CSS animations
+        this.resumeIonChannelCSSAnimations();
     }
 
     cleanupStimulationEffect() {
@@ -454,7 +465,7 @@ class RealisticNeuron {
         const dendrites = this.elementManager.getElement('dendrites');
         if (dendrites && dendrites.length) {
             dendrites.forEach(dendrite => {
-                dendrite.style.stroke = '';
+                dendrite.style.stroke = 'url(#restingGradient)';
                 dendrite.style.strokeWidth = '';
                 dendrite.style.filter = '';
             });
@@ -502,6 +513,9 @@ class RealisticNeuron {
         console.log('Starting axon hillock spike animation');
         this.animationState.currentPhase = 'axonHillock';
 
+        // Pause ion channel CSS animations during axon hillock activation
+        this.pauseIonChannelCSSAnimations();
+
         // Activate axon hillock
         this.elementManager.setElementAttribute('axonHillock', 'fill', 'url(#depolarizedGradient)');
         this.elementManager.setElementStyle('axonHillock', { filter: 'url(#actionPotentialGlow)' });
@@ -542,6 +556,9 @@ class RealisticNeuron {
         this.elementManager.setElementStyle('initialSegment', { strokeWidth: '4' });
         this.elementManager.setElementStyle('initialSegment', { filter: 'none' });
 
+        // Resume ion channel CSS animations
+        this.resumeIonChannelCSSAnimations();
+
         console.log('Axon hillock spike animation completed');
     }
 
@@ -563,6 +580,9 @@ class RealisticNeuron {
         console.log('Starting action potential propagation animation');
         this.animationState.apActive = true;
         this.animationState.currentPhase = 'actionPotential';
+
+        // Pause ion channel CSS animations during action potential
+        this.pauseIonChannelCSSAnimations();
 
         // Show membrane potential group
         this.elementManager.setElementStyle('membranePotentialGroup', { opacity: '1' });
@@ -617,6 +637,9 @@ class RealisticNeuron {
 
         // Activate synaptic terminals
         await this.activateSynapticTerminals();
+
+        // Resume ion channel CSS animations after action potential completes
+        this.resumeIonChannelCSSAnimations();
     }
 
     cleanupActionPotentialPropagation() {
@@ -642,6 +665,7 @@ class RealisticNeuron {
         // Activate Na+ channels
         const nodeChannels = this.elementManager.getElement('naChannelsNodes');
         if (nodeChannels && nodeChannels[index]) {
+            nodeChannels[index].classList.add('ion-channels-animating');
             nodeChannels[index].style.fill = '#ff0000';
             nodeChannels[index].style.opacity = '1';
             nodeChannels[index].style.transform = 'scale(2.5)';
@@ -659,6 +683,7 @@ class RealisticNeuron {
             nodeChannels[index].style.fill = '#ffffff';
             nodeChannels[index].style.transform = 'scale(1)';
             nodeChannels[index].style.filter = 'none';
+            nodeChannels[index].classList.remove('ion-channels-animating');
         }
     }
 
@@ -702,7 +727,7 @@ class RealisticNeuron {
 
                         return this.timingManager.delay(this.timingManager.getTiming('dendriticActivation'))
                             .then(() => {
-                                dendrite.style.stroke = '';
+                                dendrite.style.stroke = 'url(#restingGradient)';
                                 dendrite.style.strokeWidth = '';
                                 dendrite.style.filter = '';
                             });
@@ -723,7 +748,7 @@ class RealisticNeuron {
 
                         return this.timingManager.delay(100)
                             .then(() => {
-                                spine.style.stroke = '';
+                                spine.style.stroke = 'url(#restingGradient)';
                                 spine.style.strokeWidth = '';
                             });
                     });
@@ -739,17 +764,19 @@ class RealisticNeuron {
         const dendrites = this.elementManager.getElement('dendrites');
         if (dendrites && dendrites.length) {
             dendrites.forEach(dendrite => {
-                dendrite.style.stroke = '';
+                dendrite.style.stroke = 'url(#restingGradient)';
                 dendrite.style.strokeWidth = '';
                 dendrite.style.filter = '';
+                dendrite.style.transform = '';
             });
         }
 
         const spines = this.elementManager.getElement('spines');
         if (spines && spines.length) {
             spines.forEach(spine => {
-                spine.style.stroke = '';
+                spine.style.stroke = 'url(#restingGradient)';
                 spine.style.strokeWidth = '';
+                spine.style.transform = '';
             });
         }
     }
@@ -759,6 +786,9 @@ class RealisticNeuron {
         console.log('Starting calcium dynamics animation');
         this.animationState.calciumActive = true;
         this.animationState.currentPhase = 'calcium';
+
+        // Pause ion channel CSS animations during calcium dynamics
+        this.pauseIonChannelCSSAnimations();
 
         // Show calcium dynamics group
         this.elementManager.setElementStyle('calciumDynamics', { opacity: '1' });
@@ -802,6 +832,11 @@ class RealisticNeuron {
         // Activate calcium channels
         const caChannels = this.elementManager.getElement('caChannels');
         if (caChannels && caChannels.length) {
+            // Add animation class to pause CSS animations
+            caChannels.forEach(channel => {
+                channel.classList.add('ion-channels-animating');
+            });
+
             const channelPromises = Array.from(caChannels).map((channel, index) => {
                 return this.timingManager.delay(index * 30)
                     .then(() => {
@@ -820,7 +855,15 @@ class RealisticNeuron {
             });
 
             await Promise.all(channelPromises);
+
+            // Remove animation class after completion
+            caChannels.forEach(channel => {
+                channel.classList.remove('ion-channels-animating');
+            });
         }
+
+        // Resume ion channel CSS animations after calcium dynamics completes
+        this.resumeIonChannelCSSAnimations();
 
         console.log('Calcium dynamics animation completed');
     }
@@ -851,6 +894,7 @@ class RealisticNeuron {
                 channel.style.fill = '#fdcb6e';
                 channel.style.transform = 'scale(1)';
                 channel.style.filter = 'none';
+                channel.classList.remove('ion-channels-animating');
             });
         }
     }
@@ -859,6 +903,9 @@ class RealisticNeuron {
     async executeSynapticTransmission() {
         this.animationState.synapticActive = true;
         this.animationState.currentPhase = 'synaptic';
+
+        // Pause ion channel CSS animations during synaptic transmission
+        this.pauseIonChannelCSSAnimations();
 
         this.elementManager.setElementStyle('synapticTransmission', { opacity: '1' });
 
@@ -876,6 +923,9 @@ class RealisticNeuron {
         }
 
         await this.timingManager.delay(this.timingManager.getTiming('synapticTransmission'));
+
+        // Resume ion channel CSS animations after synaptic transmission completes
+        this.resumeIonChannelCSSAnimations();
     }
 
     cleanupSynapticTransmission() {
@@ -883,6 +933,26 @@ class RealisticNeuron {
         this.elementManager.setElementStyle('synapticTransmission', { opacity: '0' });
         this.elementManager.setElementAttribute('synapticBoutons', 'fill', 'url(#restingGradient)', true);
         this.elementManager.setElementStyle('synapticBoutons', { filter: 'none' }, true);
+
+        // Reset neurotransmitters to prevent "flying everywhere"
+        const neurotransmitters = this.elementManager.getElement('neurotransmitters');
+        if (neurotransmitters && neurotransmitters.length) {
+            neurotransmitters.forEach(vesicle => {
+                vesicle.style.opacity = '0';
+                vesicle.style.transform = 'scale(1)';
+                vesicle.style.filter = 'none';
+            });
+        }
+
+        // Reset postsynaptic responses
+        const responses = this.elementManager.getElement('postsynapticResponses');
+        if (responses && responses.length) {
+            responses.forEach(response => {
+                response.style.opacity = '0';
+                response.style.transform = 'scale(1)';
+                response.style.filter = 'none';
+            });
+        }
     }
 
     async releaseNeurotransmitter(boutonIndex) {
@@ -989,8 +1059,65 @@ class RealisticNeuron {
                 this.I_stim = 0;
                 this.isStimulating = false;
                 if (stimBtn) stimBtn.classList.remove('stimulating');
+                this.cleanupAllIonChannels();
                 console.log('Stimulation reset complete');
             });
+    }
+
+    // Pause CSS animations for all ion channels
+    pauseIonChannelCSSAnimations() {
+        const allChannels = [
+            this.elementManager.getElement('naChannelsAxon'),
+            this.elementManager.getElement('naChannelsNodes'),
+            this.elementManager.getElement('kChannels'),
+            this.elementManager.getElement('caChannels')
+        ];
+
+        allChannels.forEach(channelGroup => {
+            if (channelGroup && channelGroup.length) {
+                channelGroup.forEach(channel => {
+                    channel.classList.add('ion-channels-animating');
+                });
+            }
+        });
+    }
+
+    // Resume CSS animations for all ion channels
+    resumeIonChannelCSSAnimations() {
+        const allChannels = [
+            this.elementManager.getElement('naChannelsAxon'),
+            this.elementManager.getElement('naChannelsNodes'),
+            this.elementManager.getElement('kChannels'),
+            this.elementManager.getElement('caChannels')
+        ];
+
+        allChannels.forEach(channelGroup => {
+            if (channelGroup && channelGroup.length) {
+                channelGroup.forEach(channel => {
+                    channel.classList.remove('ion-channels-animating');
+                });
+            }
+        });
+    }
+
+    // Global cleanup for all ion channels
+    cleanupAllIonChannels() {
+        const allChannels = [
+            this.elementManager.getElement('naChannelsAxon'),
+            this.elementManager.getElement('naChannelsNodes'),
+            this.elementManager.getElement('kChannels'),
+            this.elementManager.getElement('caChannels')
+        ];
+
+        allChannels.forEach(channelGroup => {
+            if (channelGroup && channelGroup.length) {
+                channelGroup.forEach(channel => {
+                    channel.style.transform = 'scale(1)';
+                    channel.style.filter = 'none';
+                    channel.classList.remove('ion-channels-animating');
+                });
+            }
+        });
     }
 
     // The following methods remain largely unchanged as they handle the Hodgkin-Huxley model
