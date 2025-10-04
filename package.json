@@ -1,7 +1,13 @@
 {
   "name": "MiniNeuron",
+  "description": "A colorful, interactive neuron animation built for **coding workflow practice** and visual fun!",
+  "keywords": [
+    "practice",
+    "fun",
+    "mini neurons"
+  ],
   "author": "Scorpio4938",
   "version": "1.0",
-  "main": "index.js",
+  "main": "index.html",
   "license": "MIT"
 }

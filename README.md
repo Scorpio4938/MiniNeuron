@@ -1,6 +1,6 @@
 # 🧠 MiniNeuron - Fun Neuron Animation
 
-A colorful, interactive neuron animation built for **coding practice** and visual fun! Watch beautiful animations flow through a neuron with pulsing waves, glowing effects, and dynamic color changes.
+A colorful, interactive neuron animation built for **coding workflow practice** and visual fun ~~(and wasting time)~~! Watch beautiful animations flow through a neuron with pulsing waves, glowing effects, and dynamic color changes.
 
 ## 🚀 Quick Start
 
@@ -11,7 +11,7 @@ A colorful, interactive neuron animation built for **coding practice** and visua
 
 ## ✨ What's This?
 
-This is a **coding workflow practice project** focusing on:
+This is a **coding workflow practice project** from one of my older small demos, focusing on:
 
 - SVG animations & DOM manipulation
 - JavaScript timing & sequencing
@@ -25,12 +25,10 @@ This is a **coding workflow practice project** focusing on:
 - **Colorful Action Potentials** - Waves travel along the axon
 - **Ion Channel Animations** - Tiny balls moving through channels
 - **Synaptic Transmission** - Neurotransmitter release effects
-- **Real-time Controls** - Adjust speed, intensity, and patterns
-- **Dynamic Visuals** - Membrane colors change with activity
 
 ## 🛠️ Tech Stack
 
-- **Pure JavaScript** - No frameworks
+- **Pure JavaScript** - No frameworks & main libs
 - **SVG Animations** - Smooth vector graphics
 - **CSS3 Effects** - Gradients, filters, transforms
 
@@ -52,4 +50,4 @@ this.timings = { dendriticActivation: 300 /* ... */ };
 
 ---
 
-**Remember:** This is art + code workflow practice, not science! Have fun exploring the visual possibilities. 🎨✨
+**Remember:** This is art + code workflow practice, not science! Have fun exploring the visual possibilities.
