@@ -174,8 +174,8 @@ class TimingManager {
             dendriticPropagation: 50,
             somaDepolarization: 100,
             axonHillockActivation: 50,
-            actionPotentialWave: 3000,
-            nodeActivation: 500,
+            actionPotentialWave: 1500,
+            nodeActivation: 400,
             synapticTransmission: 1500,
             calciumDynamics: 2000,
             neurotransmitterRelease: 100,
@@ -484,6 +484,7 @@ class RealisticNeuron {
         const soma = this.elementManager.getElement('soma');
         if (soma) {
             soma.style.transform = 'scale(1.1)';
+            soma.style.transformOrigin = 'center';
         }
 
         // Wait for depolarization duration
@@ -495,6 +496,7 @@ class RealisticNeuron {
 
         if (soma) {
             soma.style.transform = 'scale(1)';
+            soma.style.transformOrigin = 'center';
         }
     }
 
@@ -523,6 +525,7 @@ class RealisticNeuron {
         const axonHillock = this.elementManager.getElement('axonHillock');
         if (axonHillock) {
             axonHillock.style.transform = 'scale(1.5)';
+            axonHillock.style.transformOrigin = 'center';
             console.log('Axon hillock activated');
         } else {
             console.warn('Axon hillock element not found');
@@ -549,6 +552,7 @@ class RealisticNeuron {
 
         if (axonHillock) {
             axonHillock.style.transform = 'scale(1)';
+            axonHillock.style.transformOrigin = 'center';
         }
 
         // Reset initial segment
@@ -607,6 +611,26 @@ class RealisticNeuron {
         wave.style.strokeDasharray = length;
         wave.style.strokeDashoffset = length;
 
+        // Calculate node activation times based on their positions along the axon
+        // Path: M 400 300 L 440 300 L 500 300 L 580 300 L 660 300 L 740 300
+        // Total length: 340px
+        // Node positions from start: Node1=100px (29.4%), Node2=180px (52.9%), Node3=260px (76.5%)
+        const nodeActivationTimes = [
+            441,  // Node 1 at 29.4% of 1500ms
+            794,  // Node 2 at 52.9% of 1500ms
+            1148  // Node 3 at 76.5% of 1500ms
+        ];
+
+        // Schedule node activations at precise times
+        const nodes = this.elementManager.getElement('nodesOfRanvier');
+        if (nodes && nodes.length) {
+            for (let i = 0; i < nodes.length; i++) {
+                setTimeout(() => {
+                    this.activateNodeOfRanvier(nodes[i], i);
+                }, nodeActivationTimes[i]);
+            }
+        }
+
         // Animate wave propagation
         await this.timingManager.animate(
             this.timingManager.getTiming('actionPotentialWave'),
@@ -626,14 +650,8 @@ class RealisticNeuron {
             }
         );
 
-        // Activate nodes of Ranvier in sequence
-        const nodes = this.elementManager.getElement('nodesOfRanvier');
-        if (nodes && nodes.length) {
-            for (let i = 0; i < nodes.length; i++) {
-                await this.timingManager.delay(this.timingManager.getTiming('nodeActivation'));
-                await this.activateNodeOfRanvier(nodes[i], i);
-            }
-        }
+        // Animate potassium channels during repolarization phase
+        await this.animatePotassiumChannels();
 
         // Activate synaptic terminals
         await this.activateSynapticTerminals();
@@ -655,36 +673,106 @@ class RealisticNeuron {
         }
 
         this.elementManager.setElementStyle('membranePotentialGroup', { opacity: '0' });
+
+        // Clean up all ion channels
+        this.cleanupAllIonChannels();
     }
 
     async activateNodeOfRanvier(node, index) {
         node.setAttribute('fill', 'url(#depolarizedGradient)');
         node.style.filter = 'url(#actionPotentialGlow)';
         node.style.transform = 'scale(1.8)';
+        node.style.transformOrigin = 'center';
 
-        // Activate Na+ channels
+        // Activate Na+ channels - there are 2 channels per node
         const nodeChannels = this.elementManager.getElement('naChannelsNodes');
-        if (nodeChannels && nodeChannels[index]) {
-            nodeChannels[index].classList.add('ion-channels-animating');
-            nodeChannels[index].style.fill = '#ff0000';
-            nodeChannels[index].style.opacity = '1';
-            nodeChannels[index].style.transform = 'scale(2.5)';
-            nodeChannels[index].style.filter = 'url(#actionPotentialGlow)';
+        if (nodeChannels && nodeChannels.length >= (index * 2 + 1)) {
+            // Activate both channels for this node
+            const channelIndex1 = index * 2;
+            const channelIndex2 = index * 2 + 1;
+
+            if (nodeChannels[channelIndex1]) {
+                nodeChannels[channelIndex1].classList.add('ion-channels-animating');
+                nodeChannels[channelIndex1].style.fill = '#ff0000';
+                nodeChannels[channelIndex1].style.opacity = '1';
+                nodeChannels[channelIndex1].style.transform = 'scale(2.5)';
+                nodeChannels[channelIndex1].style.transformOrigin = 'center';
+                nodeChannels[channelIndex1].style.filter = 'url(#actionPotentialGlow)';
+            }
+
+            if (nodeChannels[channelIndex2]) {
+                nodeChannels[channelIndex2].classList.add('ion-channels-animating');
+                nodeChannels[channelIndex2].style.fill = '#ff0000';
+                nodeChannels[channelIndex2].style.opacity = '1';
+                nodeChannels[channelIndex2].style.transform = 'scale(2.5)';
+                nodeChannels[channelIndex2].style.transformOrigin = 'center';
+                nodeChannels[channelIndex2].style.filter = 'url(#actionPotentialGlow)';
+            }
         }
 
-        await this.timingManager.delay(100);
+        await this.timingManager.delay(400);
 
         // Reset
         node.setAttribute('fill', 'url(#restingGradient)');
         node.style.filter = 'url(#glow)';
         node.style.transform = 'scale(1)';
+        node.style.transformOrigin = 'center';
 
-        if (nodeChannels && nodeChannels[index]) {
-            nodeChannels[index].style.fill = '#ffffff';
-            nodeChannels[index].style.transform = 'scale(1)';
-            nodeChannels[index].style.filter = 'none';
-            nodeChannels[index].classList.remove('ion-channels-animating');
+        if (nodeChannels && nodeChannels.length >= (index * 2 + 1)) {
+            const channelIndex1 = index * 2;
+            const channelIndex2 = index * 2 + 1;
+
+            if (nodeChannels[channelIndex1]) {
+                nodeChannels[channelIndex1].style.fill = '#ffffff';
+                nodeChannels[channelIndex1].style.transform = 'scale(1)';
+                nodeChannels[channelIndex1].style.transformOrigin = 'center';
+                nodeChannels[channelIndex1].style.filter = 'none';
+                nodeChannels[channelIndex1].classList.remove('ion-channels-animating');
+            }
+
+            if (nodeChannels[channelIndex2]) {
+                nodeChannels[channelIndex2].style.fill = '#ffffff';
+                nodeChannels[channelIndex2].style.transform = 'scale(1)';
+                nodeChannels[channelIndex2].style.transformOrigin = 'center';
+                nodeChannels[channelIndex2].style.filter = 'none';
+                nodeChannels[channelIndex2].classList.remove('ion-channels-animating');
+            }
         }
+    }
+
+    async animatePotassiumChannels() {
+        console.log('Starting potassium channel animation');
+
+        const kChannels = this.elementManager.getElement('kChannels');
+        if (!kChannels || !kChannels.length) {
+            console.warn('Potassium channels not found');
+            return;
+        }
+
+        // Animate potassium channels with sequential activation
+        const animationPromises = Array.from(kChannels).map((channel, index) => {
+            return this.timingManager.delay(index * 100)
+                .then(() => {
+                    channel.classList.add('ion-channels-animating');
+                    channel.style.fill = '#ff5500';
+                    channel.style.opacity = '1';
+                    channel.style.transform = 'scale(2)';
+                    channel.style.transformOrigin = 'center';
+                    channel.style.filter = 'url(#glow)';
+
+                    return this.timingManager.delay(300)
+                        .then(() => {
+                            channel.style.fill = '#ffa500';
+                            channel.style.transform = 'scale(1)';
+                            channel.style.transformOrigin = 'center';
+                            channel.style.filter = 'none';
+                            channel.classList.remove('ion-channels-animating');
+                        });
+                });
+        });
+
+        await Promise.all(animationPromises);
+        console.log('Potassium channel animation completed');
     }
 
     async activateSynapticTerminals() {
@@ -697,12 +785,14 @@ class RealisticNeuron {
                     bouton.setAttribute('fill', 'url(#depolarizedGradient)');
                     bouton.style.filter = 'url(#synapticGlow)';
                     bouton.style.transform = 'scale(1.3)';
+                    bouton.style.transformOrigin = 'center';
 
                     return this.timingManager.delay(200)
                         .then(() => {
                             bouton.setAttribute('fill', 'url(#restingGradient)');
                             bouton.style.filter = 'none';
                             bouton.style.transform = 'scale(1)';
+                            bouton.style.transformOrigin = 'center';
                         });
                 });
         });
@@ -825,6 +915,7 @@ class RealisticNeuron {
                     calciumWave.style.opacity = (1 - progress).toString();
                     calciumWave.style.strokeWidth = (2 + progress * 3).toString();
                     calciumWave.style.transform = `scale(${1 + progress * 0.5})`;
+                    calciumWave.style.transformOrigin = 'center';
                 }
             );
         }
@@ -843,12 +934,14 @@ class RealisticNeuron {
                         channel.style.fill = '#fdcb6e';
                         channel.style.opacity = '1';
                         channel.style.transform = 'scale(2)';
+                        channel.style.transformOrigin = 'center';
                         channel.style.filter = 'url(#glow)';
 
                         return this.timingManager.delay(150)
                             .then(() => {
                                 channel.style.fill = '#fdcb6e';
                                 channel.style.transform = 'scale(1)';
+                                channel.style.transformOrigin = 'center';
                                 channel.style.filter = 'none';
                             });
                     });
@@ -966,16 +1059,19 @@ class RealisticNeuron {
                 .then(() => {
                     vesicle.style.opacity = '1';
                     vesicle.style.transform = 'scale(2)';
+                    vesicle.style.transformOrigin = 'center';
                     vesicle.style.filter = 'url(#synapticGlow)';
 
                     return this.timingManager.delay(100)
                         .then(() => {
                             vesicle.style.transform = 'scale(1.5)';
+                            vesicle.style.transformOrigin = 'center';
 
                             return this.timingManager.delay(100)
                                 .then(() => {
                                     vesicle.style.opacity = '0';
                                     vesicle.style.transform = 'scale(1)';
+                                    vesicle.style.transformOrigin = 'center';
                                     this.triggerPostsynapticResponse(boutonIndex);
                                 });
                         });
@@ -995,17 +1091,20 @@ class RealisticNeuron {
             .then(() => {
                 response.style.opacity = '1';
                 response.style.transform = 'scale(2)';
+                response.style.transformOrigin = 'center';
                 response.style.filter = 'url(#glow)';
 
                 return this.timingManager.delay(100)
                     .then(() => {
                         response.style.transform = 'scale(1.5)';
+                        response.style.transformOrigin = 'center';
                         response.style.opacity = '0.8';
 
                         return this.timingManager.delay(200)
                             .then(() => {
                                 response.style.opacity = '0';
                                 response.style.transform = 'scale(1)';
+                                response.style.transformOrigin = 'center';
                                 response.style.filter = 'none';
                             });
                     });

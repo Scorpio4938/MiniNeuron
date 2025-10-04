@@ -134,6 +134,8 @@ h1 {
 .ion-channels circle {
     transition: all 0.1s ease;
     cursor: pointer;
+    transform-origin: center;
+    transform-box: fill-box;
 }
 
 .ion-channels circle:hover {
@@ -142,24 +144,29 @@ h1 {
 
 .na-channels-axon circle {
     animation: naChannelFlicker 2s infinite ease-in-out;
+    transform-origin: center;
 }
 
 .na-channels-nodes circle {
     animation: naChannelFlicker 1.5s infinite ease-in-out;
+    transform-origin: center;
 }
 
 .k-channels circle {
     animation: kChannelFlicker 3s infinite ease-in-out;
+    transform-origin: center;
 }
 
 .ca-channels circle {
     animation: caChannelFlicker 2s infinite ease-in-out;
+    transform-origin: center;
 }
 
 /* Pause CSS animations during JavaScript animations */
 .ion-channels-animating circle {
     animation-play-state: paused !important;
-    transform-origin: center;
+    transform-origin: center !important;
+    transform-box: fill-box !important;
 }
 
 @keyframes naChannelFlicker {
