@@ -1,6 +1,6 @@
 # MiniNeuron - Fun Neuron Animation
 
-A colorful, interactive neuron animation built for **coding workflow practice** and visual fun ~~(and wasting time)~~! Watch beautiful animations flow through a neuron with pulsing waves, glowing effects, and dynamic color changes.
+A colorful, interactive neuron animation built for **coding workflow practice** and visual fun ~~(and wasting time)~~! 
 
 ## What's This?
 
