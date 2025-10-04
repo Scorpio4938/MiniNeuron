@@ -6,76 +6,218 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
     color: #ffffff;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
     text-align: center;
+    position: relative;
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin-bottom: 0.5rem;
-    background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+    background: linear-gradient(45deg, #00d4ff, #ff6b6b, #00b894);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .subtitle {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #b0b0b0;
     margin-bottom: 2rem;
+    font-weight: 300;
 }
 
 .neuron-container {
     margin: 2rem 0;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
-.neuron-badge {
-    border-radius: 50%;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+.neuron-svg {
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
     transition: transform 0.3s ease;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
 }
 
-.neuron-badge:hover {
-    transform: scale(1.05);
+.neuron-svg:hover {
+    transform: scale(1.02);
 }
 
+/* Soma styling */
 .soma {
+    cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.gate-sticks line {
-    transition: all 0.2s ease;
     transform-origin: center;
 }
 
-.na-gate {
-    animation: gateFlicker 2s infinite ease-in-out;
+.soma:hover {
+    transform: scale(1.05);
 }
 
-.k-gate {
-    animation: gateFlicker 2.5s infinite ease-in-out reverse;
+.soma:active {
+    transform: scale(0.95);
 }
 
-.thermal-arc {
-    animation: thermalPulse 3s infinite ease-in-out;
+/* Nucleus styling */
+.nucleus {
+    transition: all 0.3s ease;
 }
 
-@keyframes gateFlicker {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
+.nucleolus {
+    transition: all 0.3s ease;
+}
+
+/* Organelles styling */
+.organelles ellipse,
+.organelles path {
+    transition: all 0.3s ease;
+}
+
+/* Axon system styling */
+.axon-hillock {
+    transition: all 0.2s ease;
+}
+
+.initial-segment {
+    transition: all 0.2s ease;
+}
+
+.myelinated-axon rect {
+    transition: all 0.2s ease;
+}
+
+.node-ranvier {
+    transition: all 0.2s ease;
+}
+
+.terminal-branch {
+    transition: all 0.2s ease;
+}
+
+.synaptic-bouton {
+    transition: all 0.2s ease;
+}
+
+.synaptic-vesicles circle {
+    transition: all 0.1s ease;
+}
+
+/* Dendritic tree styling */
+.dendritic-tree path {
+    transition: all 0.3s ease;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.dendritic-spines path {
+    transition: all 0.2s ease;
+    stroke-linecap: round;
+}
+
+/* Ion channels styling */
+.ion-channels circle {
+    transition: all 0.1s ease;
+    cursor: pointer;
+}
+
+.ion-channels circle:hover {
+    transform: scale(1.5);
+}
+
+.na-channels-axon circle {
+    animation: naChannelFlicker 2s infinite ease-in-out;
+}
+
+.na-channels-nodes circle {
+    animation: naChannelFlicker 1.5s infinite ease-in-out;
+}
+
+.k-channels circle {
+    animation: kChannelFlicker 3s infinite ease-in-out;
+}
+
+.ca-channels circle {
+    animation: caChannelFlicker 2s infinite ease-in-out;
+}
+
+@keyframes naChannelFlicker {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes kChannelFlicker {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+}
+
+@keyframes caChannelFlicker {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+/* Membrane potential visualization */
+.membrane-potential path {
+    transition: all 0.2s ease;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 3px currentColor);
+}
+
+.action-potential-wave {
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    transition: stroke-dashoffset 0.1s ease;
+}
+
+.dendritic-potential {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Synaptic transmission */
+.synaptic-transmission {
+    transition: opacity 0.3s ease;
+}
+
+.neurotransmitter {
+    transition: all 0.2s ease;
+}
+
+.postsynaptic-response {
+    transition: all 0.3s ease;
+}
+
+/* Calcium dynamics */
+.calcium-dynamics {
+    transition: opacity 0.3s ease;
+}
+
+.calcium-influx {
+    transition: all 0.2s ease;
+}
+
+.calcium-wave {
+    transition: all 0.3s ease;
+}
+
+/* Temperature indicator */
+.temperature-indicator {
+    animation: thermalPulse 4s infinite ease-in-out;
 }
 
 @keyframes thermalPulse {
@@ -83,13 +225,15 @@ h1 {
     50% { opacity: 1; }
 }
 
+/* Controls styling */
 .controls {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
     padding: 2rem;
     margin: 2rem 0;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .slider-group {
@@ -99,87 +243,124 @@ h1 {
 
 .slider-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     font-weight: 500;
     color: #e0e0e0;
+    font-size: 1.1rem;
 }
 
 .slider-group input[type="range"] {
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, #333, #666);
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #333, #666, #999);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
+    transition: all 0.3s ease;
+}
+
+.slider-group input[type="range"]:hover {
+    background: linear-gradient(90deg, #444, #777, #aaa);
 }
 
 .slider-group input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+    background: linear-gradient(45deg, #00d4ff, #00b894);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
 }
 
 .slider-group input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+    background: linear-gradient(45deg, #00d4ff, #00b894);
     cursor: pointer;
     border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
 }
 
+.slider-group input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+}
+
+/* Info panel styling */
 .info-panel {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
 }
 
 .voltage-display {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.frequency-display {
+    font-size: 1.1rem;
     font-weight: 500;
 }
 
 #voltage-value {
     color: #00d4ff;
     font-weight: bold;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
-.pulse-control button {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+#firing-rate {
+    color: #00b894;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-shadow: 0 0 8px rgba(0, 184, 148, 0.4);
+}
+
+.stimulation-control button {
+    background: linear-gradient(45deg, #00b894, #00a085);
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 2rem;
     border-radius: 25px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.pulse-control button:hover {
+.stimulation-control button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
 }
 
-.pulse-control button:active {
+.stimulation-control button:active {
     transform: translateY(0);
 }
 
-.pulse-control button.pulsing {
-    background: linear-gradient(45deg, #00d4ff, #0099cc);
+.stimulation-control button.stimulating {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
     animation: pulse 0.5s ease-in-out;
 }
 
@@ -188,22 +369,200 @@ h1 {
     50% { transform: scale(1.1); }
 }
 
-@media (max-width: 600px) {
+/* Legend styling */
+.legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
+}
+
+.legend-item span {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
     .container {
         padding: 0 1rem;
     }
 
     h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
-    .neuron-badge {
-        width: 150px;
-        height: 150px;
+    .neuron-svg {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
     }
 
     .info-panel {
         flex-direction: column;
         gap: 1rem;
+        text-align: center;
+    }
+
+    .legend {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .controls {
+        padding: 1.5rem;
+    }
+
+    .slider-group {
+        margin: 1rem 0;
     }
 }
+
+/* Special effects */
+.glow-effect {
+    filter: url(#glow) brightness(1.2);
+}
+
+.action-potential-effect {
+    filter: url(#actionPotentialGlow) brightness(1.5);
+}
+
+.synaptic-effect {
+    filter: url(#synapticGlow) brightness(1.3);
+}
+
+/* Action potential animation */
+@keyframes actionPotential {
+    0% {
+        opacity: 0;
+        stroke-dashoffset: 400;
+    }
+    10% {
+        opacity: 1;
+        stroke: #ff0000;
+    }
+    90% {
+        opacity: 1;
+        stroke: #ff0000;
+    }
+    100% {
+        opacity: 0;
+        stroke-dashoffset: 0;
+    }
+}
+
+.action-potential-active {
+    animation: actionPotential 2s ease-out;
+}
+
+/* Synaptic transmission animation */
+@keyframes synapticRelease {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.synaptic-release {
+    animation: synapticRelease 0.3s ease-out;
+}
+
+/* Calcium influx animation */
+@keyframes calciumInflux {
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.3);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.calcium-influx-active {
+    animation: calciumInflux 0.2s ease-out;
+}
+
+/* Membrane potential color transitions */
+.membrane-depolarized {
+    fill: url(#depolarizedGradient);
+    filter: url(#actionPotentialGlow);
+}
+
+.membrane-hyperpolarized {
+    fill: url(#hyperpolarizedGradient);
+    filter: url(#glow);
+}
+
+.membrane-resting {
+    fill: url(#restingGradient);
+    filter: url(#glow);
+}
+
+/* Glass morphism effect */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(45deg, #00d4ff, #00b894, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Neon glow */
+.neon-glow {
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+}
+
+/* Animation for loading */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.container > * {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.container > *:nth-child(2) { animation-delay: 0.1s; }
+.container > *:nth-child(3) { animation-delay: 0.2s; }
+.container > *:nth-child(4) { animation-delay: 0.3s; }
+.container > *:nth-child(5) { animation-delay: 0.4s; }
+.container > *:nth-child(6) { animation-delay: 0.5s; }

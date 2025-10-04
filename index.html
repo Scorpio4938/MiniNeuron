@@ -3,28 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniNeuron - Neuron Activation Simulator</title>
+    <title>Realistic Neuron Simulator</title>
     <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>MiniNeuron</h1>
-        <p class="subtitle">A fun, lite neuron activation simulator</p>
+        <h1>Realistic Neuron Simulator</h1>
+        <p class="subtitle">Biologically accurate neuron morphology and electrophysiology</p>
 
         <div class="neuron-container">
-            <svg class="neuron-badge" width="200" height="200" viewBox="0 0 200 200">
+            <svg class="neuron-svg" width="800" height="600" viewBox="0 0 800 600">
                 <defs>
-                    <radialGradient id="somaGradient" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" style="stop-color:#ff0000;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#0000ff;stop-opacity:1" />
+                    <!-- Membrane potential gradients -->
+                    <radialGradient id="restingGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:0.9" />
                     </radialGradient>
-                    <linearGradient id="thermalGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:#0047ab;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#fff700;stop-opacity:1" />
+
+                    <radialGradient id="depolarizedGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:#d63031;stop-opacity:1" />
+                    </radialGradient>
+
+                    <radialGradient id="hyperpolarizedGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#74b9ff;stop-opacity:0.7" />
+                        <stop offset="100%" style="stop-color:#0984e3;stop-opacity:0.8" />
+                    </radialGradient>
+
+                    <!-- Nucleus gradient -->
+                    <radialGradient id="nucleusGradient" cx="40%" cy="40%" r="60%">
+                        <stop offset="0%" style="stop-color:#fd79a8;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#e84393;stop-opacity:0.9" />
+                    </radialGradient>
+
+                    <!-- Myelin sheath gradient -->
+                    <linearGradient id="myelinGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:0.9" />
+                        <stop offset="50%" style="stop-color:#e9ecef;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#dee2e6;stop-opacity:0.9" />
                     </linearGradient>
+
+                    <!-- Synaptic vesicle gradient -->
+                    <radialGradient id="vesicleGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#00b894;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#00a085;stop-opacity:0.9" />
+                    </radialGradient>
+
+                    <!-- Calcium wave gradient -->
+                    <radialGradient id="calciumGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#fdcb6e;stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:#e17055;stop-opacity:0.8" />
+                    </radialGradient>
+
+                    <!-- Filters for effects -->
                     <filter id="glow">
-                        <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+
+                    <filter id="actionPotentialGlow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+
+                    <filter id="synapticGlow">
+                        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
                         <feMerge>
                             <feMergeNode in="coloredBlur"/>
                             <feMergeNode in="SourceGraphic"/>
@@ -32,50 +81,245 @@
                     </filter>
                 </defs>
 
-                <!-- Outer glow -->
-                <circle cx="100" cy="100" r="45" fill="url(#somaGradient)" opacity="0.4" filter="url(#glow)" />
+                <!-- Background for membrane potential visualization -->
+                <rect x="0" y="0" width="800" height="600" fill="#0a0a0a" opacity="0.1" />
 
-                <!-- Soma (main cell body) -->
-                <circle cx="100" cy="100" r="40" fill="url(#somaGradient)" class="soma" />
+                <!-- Axon with proper morphology -->
+                <g class="axon-system">
+                    <!-- Axon hillock -->
+                    <circle cx="400" cy="300" r="8" fill="url(#restingGradient)" class="axon-hillock" />
 
-                <!-- Gate sticks -->
-                <g class="gate-sticks">
-                    <!-- Na+ gates (white) -->
-                    <line x1="100" y1="60" x2="100" y2="52" stroke="white" stroke-width="2" class="na-gate" />
-                    <line x1="130" y1="70" x2="138" y2="66" stroke="white" stroke-width="2" class="na-gate" />
-                    <line x1="140" y1="100" x2="148" y2="100" stroke="white" stroke-width="2" class="na-gate" />
-                    <line x1="130" y1="130" x2="138" y2="134" stroke="white" stroke-width="2" class="na-gate" />
-                    <line x1="100" y1="140" x2="100" y2="148" stroke="white" stroke-width="2" class="na-gate" />
-                    <line x1="70" y1="130" x2="62" y2="134" stroke="white" stroke-width="2" class="na-gate" />
+                    <!-- Initial segment -->
+                    <path d="M 408 300 L 440 300" stroke="url(#restingGradient)" stroke-width="4" class="initial-segment" />
 
-                    <!-- K+ gates (orange) -->
-                    <line x1="60" y1="100" x2="52" y2="100" stroke="#ffa500" stroke-width="2" class="k-gate" />
-                    <line x1="70" y1="70" x2="62" y2="66" stroke="#ffa500" stroke-width="2" class="k-gate" />
-                    <line x1="100" y1="60" x2="100" y2="52" stroke="#ffa500" stroke-width="2" class="k-gate" />
-                    <line x1="130" y1="70" x2="138" y2="66" stroke="#ffa500" stroke-width="2" class="k-gate" />
-                    <line x1="140" y1="100" x2="148" y2="100" stroke="#ffa500" stroke-width="2" class="k-gate" />
-                    <line x1="130" y1="130" x2="138" y2="134" stroke="#ffa500" stroke-width="2" class="k-gate" />
+                    <!-- Myelinated axon with nodes of Ranvier -->
+                    <g class="myelinated-axon">
+                        <!-- Myelin sheaths -->
+                        <rect x="440" y="295" width="60" height="10" fill="url(#myelinGradient)" class="myelin-segment-1" rx="5" />
+                        <rect x="520" y="295" width="60" height="10" fill="url(#myelinGradient)" class="myelin-segment-2" rx="5" />
+                        <rect x="600" y="295" width="60" height="10" fill="url(#myelinGradient)" class="myelin-segment-3" rx="5" />
+                        <rect x="680" y="295" width="60" height="10" fill="url(#myelinGradient)" class="myelin-segment-4" rx="5" />
+
+                        <!-- Nodes of Ranvier -->
+                        <circle cx="500" cy="300" r="3" fill="url(#restingGradient)" class="node-ranvier-1" />
+                        <circle cx="580" cy="300" r="3" fill="url(#restingGradient)" class="node-ranvier-2" />
+                        <circle cx="660" cy="300" r="3" fill="url(#restingGradient)" class="node-ranvier-3" />
+                    </g>
+
+                    <!-- Axon terminals with synaptic boutons -->
+                    <g class="axon-terminals">
+                        <!-- Terminal branches -->
+                        <path d="M 740 300 L 760 290 L 775 285" stroke="url(#restingGradient)" stroke-width="2" class="terminal-branch-1" />
+                        <path d="M 740 300 L 760 300 L 775 300" stroke="url(#restingGradient)" stroke-width="2" class="terminal-branch-2" />
+                        <path d="M 740 300 L 760 310 L 775 315" stroke="url(#restingGradient)" stroke-width="2" class="terminal-branch-3" />
+
+                        <!-- Synaptic boutons -->
+                        <circle cx="775" cy="285" r="4" fill="url(#restingGradient)" class="synaptic-bouton-1" />
+                        <circle cx="775" cy="300" r="4" fill="url(#restingGradient)" class="synaptic-bouton-2" />
+                        <circle cx="775" cy="315" r="4" fill="url(#restingGradient)" class="synaptic-bouton-3" />
+
+                        <!-- Synaptic vesicles -->
+                        <g class="synaptic-vesicles">
+                            <circle cx="770" cy="282" r="1.5" fill="url(#vesicleGradient)" class="vesicle-1" />
+                            <circle cx="777" cy="287" r="1.5" fill="url(#vesicleGradient)" class="vesicle-2" />
+                            <circle cx="772" cy="292" r="1.5" fill="url(#vesicleGradient)" class="vesicle-3" />
+                        </g>
+                    </g>
                 </g>
 
-                <!-- Thermal arc (bottom) -->
-                <path d="M 50 150 A 50 50 0 0 1 150 150" fill="none" stroke="url(#thermalGradient)" stroke-width="3" class="thermal-arc" />
+                <!-- Soma (Cell Body) with nucleus -->
+                <g class="soma-system">
+                    <!-- Main soma body -->
+                    <ellipse cx="400" cy="300" rx="35" ry="25" fill="url(#restingGradient)" class="soma" filter="url(#glow)" />
+
+                    <!-- Nucleus -->
+                    <ellipse cx="400" cy="300" rx="20" ry="15" fill="url(#nucleusGradient)" class="nucleus" opacity="0.7" />
+
+                    <!-- Nucleolus -->
+                    <circle cx="400" cy="300" r="5" fill="#fd79a8" class="nucleolus" opacity="0.8" />
+
+                    <!-- Organelles (mitochondria, ER) -->
+                    <g class="organelles">
+                        <ellipse cx="385" cy="290" rx="3" ry="6" fill="#55efc4" class="mitochondrion-1" opacity="0.6" />
+                        <ellipse cx="415" cy="310" rx="2" ry="4" fill="#55efc4" class="mitochondrion-2" opacity="0.6" />
+                        <path d="M 390 285 Q 395 290 390 295" stroke="#74b9ff" stroke-width="1" fill="none" class="endoplasmic-reticulum" opacity="0.5" />
+                    </g>
+                </g>
+
+                <!-- Dendritic Tree with realistic branching -->
+                <g class="dendritic-tree">
+                    <!-- Primary dendrites (1st order) -->
+                    <g class="primary-dendrites">
+                        <!-- Apical dendrite -->
+                        <path d="M 400 275 Q 400 250 400 220 Q 400 190 395 160 Q 390 130 385 100"
+                              stroke="url(#restingGradient)" stroke-width="6" fill="none" class="apical-dendrite" />
+
+                        <!-- Basal dendrites -->
+                        <path d="M 380 315 Q 360 330 340 345 Q 320 360 300 375"
+                              stroke="url(#restingGradient)" stroke-width="5" fill="none" class="basal-dendrite-1" />
+                        <path d="M 420 315 Q 440 330 460 345 Q 480 360 500 375"
+                              stroke="url(#restingGradient)" stroke-width="5" fill="none" class="basal-dendrite-2" />
+                        <path d="M 385 320 Q 365 345 345 370 Q 325 395 305 420"
+                              stroke="url(#restingGradient)" stroke-width="5" fill="none" class="basal-dendrite-3" />
+                        <path d="M 415 320 Q 435 345 455 370 Q 475 395 495 420"
+                              stroke="url(#restingGradient)" stroke-width="5" fill="none" class="basal-dendrite-4" />
+                    </g>
+
+                    <!-- Secondary dendrites (2nd order) -->
+                    <g class="secondary-dendrites">
+                        <!-- Apical branches -->
+                        <path d="M 395 220 Q 380 210 365 200 Q 350 190 335 180"
+                              stroke="url(#restingGradient)" stroke-width="4" fill="none" class="apical-branch-1" />
+                        <path d="M 395 220 Q 410 210 425 200 Q 440 190 455 180"
+                              stroke="url(#restingGradient)" stroke-width="4" fill="none" class="apical-branch-2" /
+                        <path d="M 390 160 Q 375 150 360 140 Q 345 130 330 120"
+                              stroke="url(#restingGradient)" stroke-width="3" fill="none" class="apical-branch-3" />
+                        <path d="M 390 160 Q 405 150 420 140 Q 435 130 450 120"
+                              stroke="url(#restingGradient)" stroke-width="3" fill="none" class="apical-branch-4" />
+
+                        <!-- Basal branches -->
+                        <path d="M 340 345 Q 325 335 310 325 Q 295 315 280 305"
+                              stroke="url(#restingGradient)" stroke-width="3" fill="none" class="basal-branch-1" />
+                        <path d="M 460 345 Q 475 335 490 325 Q 505 315 520 305"
+                              stroke="url(#restingGradient)" stroke-width="3" fill="none" class="basal-branch-2" />
+                    </g>
+
+                    <!-- Tertiary dendrites (3rd order) -->
+                    <g class="tertiary-dendrites">
+                        <path d="M 365 200 Q 350 190 335 180 Q 320 170 305 160"
+                              stroke="url(#restingGradient)" stroke-width="2" fill="none" class="tertiary-branch-1" />
+                        <path d="M 425 200 Q 440 190 455 180 Q 470 170 485 160"
+                              stroke="url(#restingGradient)" stroke-width="2" fill="none" class="tertiary-branch-2" />
+                        <path d="M 375 150 Q 360 140 345 130 Q 330 120 315 110"
+                              stroke="url(#restingGradient)" stroke-width="2" fill="none" class="tertiary-branch-3" />
+                        <path d="M 405 150 Q 420 140 435 130 Q 450 120 465 110"
+                              stroke="url(#restingGradient)" stroke-width="2" fill="none" class="tertiary-branch-4" />
+                    </g>
+
+                    <!-- Dendritic spines -->
+                    <g class="dendritic-spines">
+                        <!-- Spines along apical dendrite -->
+                        <g class="apical-spines">
+                            <path d="M 400 250 L 410 245 L 415 240" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-1" />
+                            <path d="M 400 230 L 390 225 L 385 220" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-2" />
+                            <path d="M 400 210 L 410 205 L 415 200" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-3" />
+                            <path d="M 395 190 L 385 185 L 380 180" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-4" />
+                            <path d="M 395 170 L 405 165 L 410 160" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-5" />
+                        </g>
+
+                        <!-- Spines along basal dendrites -->
+                        <g class="basal-spines">
+                            <path d="M 370 330 L 365 325 L 360 320" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-6" />
+                            <path d="M 350 350 L 345 345 L 340 340" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-7" />
+                            <path d="M 430 330 L 435 325 L 440 320" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-8" />
+                            <path d="M 450 350 L 455 345 L 460 340" stroke="url(#restingGradient)" stroke-width="1" fill="none" class="spine-9" />
+                        </g>
+                    </g>
+                </g>
+
+                <!-- Ion channels distributed realistically -->
+                <g class="ion-channels">
+                    <!-- Na+ channels (high density at axon hillock) -->
+                    <g class="na-channels-axon">
+                        <circle cx="405" cy="295" r="1.5" fill="#ffffff" class="na-channel-1" />
+                        <circle cx="410" cy="300" r="1.5" fill="#ffffff" class="na-channel-2" />
+                        <circle cx="405" cy="305" r="1.5" fill="#ffffff" class="na-channel-3" />
+                        <circle cx="395" cy="295" r="1.5" fill="#ffffff" class="na-channel-4" />
+                        <circle cx="395" cy="305" r="1.5" fill="#ffffff" class="na-channel-5" />
+                    </g>
+
+                    <!-- Na+ channels at nodes of Ranvier -->
+                    <g class="na-channels-nodes">
+                        <circle cx="500" cy="295" r="2" fill="#ffffff" class="na-channel-node-1" />
+                        <circle cx="500" cy="305" r="2" fill="#ffffff" class="na-channel-node-2" />
+                        <circle cx="580" cy="295" r="2" fill="#ffffff" class="na-channel-node-3" />
+                        <circle cx="580" cy="305" r="2" fill="#ffffff" class="na-channel-node-4" />
+                        <circle cx="660" cy="295" r="2" fill="#ffffff" class="na-channel-node-5" />
+                        <circle cx="660" cy="305" r="2" fill="#ffffff" class="na-channel-node-6" />
+                    </g>
+
+                    <!-- K+ channels (distributed along dendrites and soma) -->
+                    <g class="k-channels">
+                        <circle cx="390" cy="290" r="1.5" fill="#ffa500" class="k-channel-1" />
+                        <circle cx="410" cy="310" r="1.5" fill="#ffa500" class="k-channel-2" />
+                        <circle cx="395" cy="230" r="1.5" fill="#ffa500" class="k-channel-3" />
+                        <circle cx="405" cy="210" r="1.5" fill="#ffa500" class="k-channel-4" />
+                        <circle cx="350" cy="350" r="1.5" fill="#ffa500" class="k-channel-5" />
+                        <circle cx="450" cy="350" r="1.5" fill="#ffa500" class="k-channel-6" />
+                    </g>
+
+                    <!-- Ca2+ channels (concentrated at presynaptic terminals) -->
+                    <g class="ca-channels">
+                        <circle cx="770" cy="282" r="1.5" fill="#fdcb6e" class="ca-channel-1" />
+                        <circle cx="775" cy="285" r="1.5" fill="#fdcb6e" class="ca-channel-2" />
+                        <circle cx="772" cy="292" r="1.5" fill="#fdcb6e" class="ca-channel-3" />
+                        <circle cx="777" cy="300" r="1.5" fill="#fdcb6e" class="ca-channel-4" />
+                        <circle cx="775" cy="308" r="1.5" fill="#fdcb6e" class="ca-channel-5" />
+                        <circle cx="772" cy="315" r="1.5" fill="#fdcb6e" class="ca-channel-6" />
+                    </g>
+                </g>
+
+                <!-- Membrane potential visualization paths -->
+                <g class="membrane-potential" opacity="0">
+                    <!-- Action potential propagation along axon -->
+                    <path d="M 400 300 L 440 300 L 500 300 L 580 300 L 660 300 L 740 300"
+                          stroke="#ff0000" stroke-width="6" fill="none" class="action-potential-wave" /
+
+                    <!-- Local potential changes in dendrites -->
+                    <path d="M 400 275 Q 400 250 400 220 Q 400 190 395 160 Q 390 130 385 100"
+                          stroke="#ffaa00" stroke-width="4" fill="none" class="dendritic-potential-1" />
+                    <path d="M 380 315 Q 360 330 340 345 Q 320 360 300 375"
+                          stroke="#ffaa00" stroke-width="3" fill="none" class="dendritic-potential-2" />
+                    <path d="M 420 315 Q 440 330 460 345 Q 480 360 500 375"
+                          stroke="#ffaa00" stroke-width="3" fill="none" class="dendritic-potential-3" />
+                </g>
+
+                <!-- Synaptic transmission visualization -->
+                <g class="synaptic-transmission" opacity="0">
+                    <!-- Neurotransmitter release -->
+                    <circle cx="773" cy="283" r="1" fill="#00b894" class="neurotransmitter-1" />
+                    <circle cx="777" cy="285" r="1" fill="#00b894" class="neurotransmitter-2" />
+                    <circle cx="775" cy="300" r="1" fill="#00b894" class="neurotransmitter-3" /
+                    <circle cx="773" cy="315" r="1" fill="#00b894" class="neurotransmitter-4" />
+
+                    <!-- Postsynaptic response -->
+                    <circle cx="330" cy="120" r="3" fill="#ff6b6b" class="postsynaptic-response-1" />
+                    <circle cx="465" cy="110" r="3" fill="#ff6b6b" class="postsynaptic-response-2" />
+                </g>
+
+                <!-- Intracellular calcium dynamics -->
+                <g class="calcium-dynamics" opacity="0">
+                    <!-- Calcium influx at active zones -->
+                    <circle cx="775" cy="285" r="8" fill="none" stroke="#fdcb6e" stroke-width="2" class="calcium-influx-1" />
+                    <circle cx="775" cy="300" r="8" fill="none" stroke="#fdcb6e" stroke-width="2" class="calcium-influx-2" /
+                    <circle cx="775" cy="315" r="8" fill="none" stroke="#fdcb6e" stroke-width="2" class="calcium-influx-3" />
+
+                    <!-- Calcium wave propagation -->
+                    <circle cx="400" cy="300" r="15" fill="none" stroke="#fdcb6e" stroke-width="1" class="calcium-wave" opacity="0.5" />
+                </g>
+
+                <!-- Temperature indicator -->
+                <g class="temperature-indicator">
+                    <path d="M 50 550 A 50 50 0 0 1 150 550" fill="none" stroke="url(#thermalGradient)" stroke-width="3" class="thermal-arc" /
+                    <text x="100" y="570" text-anchor="middle" fill="#ffffff" font-size="12" class="temperature-label">Temperature</text>
+                </g>
             </svg>
         </div>
 
         <div class="controls">
             <div class="slider-group">
-                <label for="temperature">Temperature: <span id="temp-value">23</span>°C</label>
-                <input type="range" id="temperature" min="6" max="40" value="23" step="0.1">
+                <label for="temperature">Temperature: <span id="temp-value">37</span>°C</label>
+                <input type="range" id="temperature" min="30" max="42" value="37" step="0.1">
             </div>
 
             <div class="slider-group">
-                <label for="calcium">Calcium: <span id="ca-value">2.0</span> mM</label>
-                <input type="range" id="calcium" min="0.5" max="4" value="2.0" step="0.1">
+                <label for="stimulation">Synaptic Stimulation: <span id="stim-value">0</span> Hz</label>
+                <input type="range" id="stimulation" min="0" max="100" value="0" step="1">
             </div>
 
             <div class="slider-group">
-                <label for="na-block">Na-block: <span id="na-block-value">0</span>%</label>
-                <input type="range" id="na-block" min="0" max="100" value="0" step="1">
+                <label for="ca-concentration">Extracellular Ca²⁺: <span id="ca-value">2.0</span> mM</label>
+                <input type="range" id="ca-concentration" min="0.5" max="4" value="2.0" step="0.1">
             </div>
         </div>
 
@@ -84,8 +328,31 @@
                 <span>Membrane Potential: </span>
                 <span id="voltage-value">-70.0</span> mV
             </div>
-            <div class="pulse-control">
-                <button id="pulse-btn">Pulse</button>
+            <div class="frequency-display">
+                <span>Firing Rate: </span>
+                <span id="firing-rate">0</span> Hz
+            </div>
+            <div class="stimulation-control">
+                <button id="stim-btn">Stimulate</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4a90e2;"></div>
+                <span>Resting Potential (-70 mV)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6b6b;"></div>
+                <span>Depolarization/Action Potential</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #74b9ff;"></div>
+                <span>Hyperpolarization</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #fdcb6e;"></div>
+                <span>Calcium Influx</span>
             </div>
         </div>
     </div>
